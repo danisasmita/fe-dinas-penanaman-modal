@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Peta Potensi Investasi Daerah Lampung Selatan</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .top-bar {
+            background-color: #1a4785;
+            color: white;
+            padding: 10px 0;
+        }
+        .social-icons a {
+            color: white;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        .hero-section {
+            background-color: #2c6bc6;
+            color: white;
+            padding: 50px 0;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            max-width: 120px;
+            filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.3));
+        }
+        .nav-tabs {
+            background-color: #1a4785;
+            border: none;
+        }
+        .nav-tabs .nav-link {
+            color: white;
+            border: none;
+            border-radius: 0;
+            padding: 15px 30px;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #164178;
+            color: white;
+            border: none;
+        }
+        .nav-tabs .nav-link:hover {
+            background-color: #164178;
+        }
+       
+        .map-container {
+            height: 300px;
+            position: relative;
+        }
+        .map-sidebar {
+            background-color: #1a4785;
+            color: white;
+            padding: 20px;
+            height: 100%;
+        }
+        .carousel-section {
+            background-color: #32a23e;
+            padding: 20px 0;
+        }
+        .carousel-item img {
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .category-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+            background-color: rgba(0,0,0,0.5);
+            height: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .carousel-item {
+            position: relative;
+        }
+        .growth-text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .us-text {
+            color: #32a23e;
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .footer {
+            background-color: #1a4785;
+            height: 80px;
+        }
+
+        /* New styles for filter box */
+        .filter-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 800px;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .filter-item {
+            flex: 1;
+            min-width: 0;
+        }
+        .search-box {
+            position: relative;
+            flex: 1.5;
+        }
+        .search-box input {
+            padding-left: 30px;
+            width: 100%;
+        }
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            color: #6c757d;
+        }
+        .dropdown-btn {
+            width: 100%;
+            text-align: left;
+            padding: 8px 12px;
+            background-color: white;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .dropdown-btn::after {
+            float: right;
+            margin-top: 7px;
+        }
+        .btn-cari {
+            flex: 0.8;
+            white-space: nowrap;
+            background-color: #48BA4C; /* Warna yang diinginkan */
+            color: white; /* Teks putih */
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        .checkbox-container {
+            margin-bottom: 10px;
+        }
+        .map-toggle-container {
+            margin-bottom: 10px;
+        }
+        .zoom-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .zoom-btn {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar with Social Icons and Login -->
+    <div class="top-bar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#"><i class="fas fa-globe"></i></a>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="me-3 text-white">Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu</div>
+                <button class="btn btn-light btn-sm">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section with Logo and Title -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="logo-container">
+                        <img src="/api/placeholder/120/120" alt="Logo Lampung Selatan" class="logo">
+                        <div class="ms-4">
+                            <h2 class="mb-0">PORTAL PETA POTENSI INVESTASI</h2>
+                            <h3>DAERAH LAMPUNG SELATAN</h3>
+                            <p class="mt-3 mb-0">Selamat Datang</p>
+                            <p>Cari tau lebih banyak informasi investasi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="container-fluid px-0">
+        <div class="row g-0">
+            <div class="col-md-8">
+                <ul class="nav nav-tabs" id="investmentTab" role="tablist">
+                    <li class="nav-item" role="presentation" style="width: 33.33%">
+                        <button class="nav-link active" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-tab-pane" type="button" role="tab">
+                            <i class="fas fa-map-marker-alt"></i> PETA INVESTASI
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation" style="width: 33.33%">
+                        <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-tab-pane" type="button" role="tab">
+                            <i class="fas fa-chart-line"></i> STATISTIK INVESTASI
+                        </button>
+                    </li>
+                    <li class="nav-item dropdown" role="presentation" style="width: 33.33%">
+                        <button class="nav-link dropdown-toggle" id="more-tab" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-info-circle"></i> INFORMASI LAINNYA
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">MPP Lamsel</a></li>
+                            <li><a class="dropdown-item" href="#">Proses Perizinan</a></li>
+                            <li><a class="dropdown-item" href="#">Regulasi</a></li>
+                            <li><a class="dropdown-item" href="#">KBLI 2020</a></li>
+                            <li><a class="dropdown-item" href="#">Profil Daerah</a></li>
+                            <li><a class="dropdown-item" href="#">Artikel Berita</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4" style="background-color: white;">
+                <div class="growth-container p-3">
+                    <div class="growth-text">Growth Fast<br>with</div>
+                    <div class="us-text">US</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="investmentTabContent">
+        <div class="tab-pane fade show active" id="map-tab-pane" role="tabpanel" tabindex="0">
+            <div class="map-container">
+                <div class="row g-0 h-100">
+                    <div class="col-md-3">
+                        <div class="map-sidebar">
+                            <h5>Sebaran Titik Usaha</h5>
+                            <hr>
+                            <p class="mb-3">Tidak ada inputan I!</p>
+                            <p>Lakukan filtering pada peta untuk mendapatkan klasifikasi data</p>
+                        </div>
+                    </div>
+                    <div class="col-md-9 position-relative">
+                        <img src="/api/placeholder/800/300" alt="Map" class="w-100 h-100" style="object-fit: cover;">
+
+                        <div class="position-absolute top-0 end-0 m-3 filter-box">
+        <!-- Horizontal Filter Row -->
+        <div class="filter-row">
+            <!-- Search Box -->
+            <div class="search-box filter-item">
+                <i class="fas fa-search"></i>
+                <input type="text" class="form-control" placeholder="Search">
+            </div>
+            
+            <!-- Kecamatan Dropdown -->
+            <div class="dropdown filter-item">
+                <button class="dropdown-btn dropdown-toggle" type="button" id="kecamatanDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Kecamatan
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="kecamatanDropdown">
+                    <li><a class="dropdown-item" href="#">Natar</a></li>
+                    <li><a class="dropdown-item" href="#">Rantaudjaja-hilir</a></li>
+                    <li><a class="dropdown-item" href="#">Way Kambas National Park</a></li>
+                    <li><a class="dropdown-item" href="#">Subadana</a></li>
+                    <li><a class="dropdown-item" href="#">bang Baru</a></li>
+                    <li><a class="dropdown-item" href="#">Dippara</a></li>
+                    <li><a class="dropdown-item" href="#">Mao</a></li>
+                </ul>
+            </div>
+            
+            <!-- Jenis Usaha Dropdown -->
+            <!-- <div class="dropdown filter-item">
+                <button class="dropdown-btn dropdown-toggle" type="button" id="jenisUsahaDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Jenis Usaha
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="jenisUsahaDropdown">
+                    <li><a class="dropdown-item" href="#">Pertanian</a></li>
+                    <li><a class="dropdown-item" href="#">Perdagangan</a></li>
+                    <li><a class="dropdown-item" href="#">Industri</a></li>
+                    <li><a class="dropdown-item" href="#">Jasa</a></li>
+                </ul>
+            </div> -->
+            
+            <!-- Kategori Dropdown -->
+            <!-- <div class="dropdown filter-item">
+                <button class="dropdown-btn dropdown-toggle" type="button" id="kategoriDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Kategori
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="kategoriDropdown">
+                    <li><a class="dropdown-item" href="#">Kecil</a></li>
+                    <li><a class="dropdown-item" href="#">Menengah</a></li>
+                    <li><a class="dropdown-item" href="#">Besar</a></li>
+                </ul>
+            </div> -->
+            
+            <!-- Search Button -->
+            <button class="btn btn-success btn-cari">Cari</button>
+        </div>
+        
+        <!-- Batas Wilayah Checkbox -->
+        <div class="checkbox-container">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="batasWilayah" checked>
+                <label class="form-check-label" for="batasWilayah">Batas Wilayah</label>
+            </div>
+        </div>
+        
+        <!-- Titik Usaha Checkbox -->
+        <div class="checkbox-container">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="titikUsaha" checked>
+                <label class="form-check-label" for="titikUsaha">Titik Usaha</label>
+            </div>
+        </div>
+        
+        <!-- Map/Satellite Toggle -->
+        <div class="map-toggle-container">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-secondary active">
+                    <input type="radio" name="mapType" id="map" autocomplete="off" checked> Map
+                </label>
+                <label class="btn btn-outline-secondary">
+                    <input type="radio" name="mapType" id="satellite" autocomplete="off"> Satellite
+                </label>
+            </div>
+        </div>
+        
+        <!-- Zoom Controls -->
+        <div class="zoom-controls">
+            <button class="btn btn-light zoom-btn"><i class="fas fa-plus"></i></button>
+            <button class="btn btn-light zoom-btn"><i class="fas fa-minus"></i></button>
+        </div>
+    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Carousel Section -->
+    <div class="carousel-section">
+        <div class="container">
+            <div id="investmentCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="position-relative">
+                                    <img src="/api/placeholder/300/150" class="d-block w-100" alt="Agriculture">
+                                    <div class="category-label">HORTIKULTURA</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="position-relative">
+                                    <img src="/api/placeholder/300/150" class="d-block w-100" alt="Poultry">
+                                    <div class="category-label">PETERNAKAN</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="position-relative">
+                                    <img src="/api/placeholder/300/150" class="d-block w-100" alt="Automotive">
+                                    <div class="category-label">BENGKEL OTOMOTIF</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="position-relative">
+                                    <img src="/api/placeholder/300/150" class="d-block w-100" alt="Construction">
+                                    <div class="category-label">KONSTRUKSI</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#investmentCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#investmentCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Script untuk pencarian dan filter
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fungsi untuk filter dropdown
+            function filterDropdown(inputId, dropdownId) {
+                const input = document.getElementById(inputId);
+                const dropdown = document.getElementById(dropdownId);
+                
+                input.addEventListener('input', function() {
+                    const filter = input.value.toUpperCase();
+                    const items = dropdown.getElementsByTagName('a');
+                    
+                    for (let i = 0; i < items.length; i++) {
+                        const txtValue = items[i].textContent || items[i].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            items[i].style.display = "";
+                        } else {
+                            items[i].style.display = "none";
+                        }
+                    }
+                });
+            }
+            
+            // Inisialisasi filter untuk setiap dropdown
+            filterDropdown('searchKecamatan', 'kecamatanDropdown');
+            filterDropdown('searchJenisUsaha', 'jenisUsahaDropdown');
+            filterDropdown('searchKategori', 'kategoriDropdown');
+            
+            // Script untuk zoom in/out
+            const zoomIn = document.querySelector('.btn-light .fa-plus').closest('button');
+            const zoomOut = document.querySelector('.btn-light .fa-minus').closest('button');
+            
+            zoomIn.addEventListener('click', function() {
+                console.log('Zoom In');
+                // Implement zoom in functionality here
+            });
+            
+            zoomOut.addEventListener('click', function() {
+                console.log('Zoom Out');
+                // Implement zoom out functionality here
+            });
+        });
+    </script>
+</body>
+</html>
