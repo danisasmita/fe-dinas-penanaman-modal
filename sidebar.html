@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Peta Potensi Investasi Daerah Lampung Selatan</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Montserrat from Google Fonts dengan regular dan bold -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .map-container {
+            display: flex;
+            height: 667px;
+            position: relative;
+        }
+
+        .sidebar-wrapper {
+            position: relative;
+            width: 458px;
+            height: 100%;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .map-sidebar {
+            background-color: #194795;
+            color: white;
+            padding: 20px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Style untuk judul utama "Sebaran Titik Usaha" */
+        .sidebar-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            position: absolute;
+            left: 79px;
+            top: 32px;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Garis pemisah */
+        .map-sidebar hr {
+            margin-top: 70px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Container untuk pesan utama */
+        .message-container {
+            position: absolute;
+            top: 120px;
+            left: 79px;
+            width: calc(100% - 79px - 20px);
+        }
+
+        /* Judul pesan "Tidak ada inputan !!" */
+        .message-title {
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        /* Deskripsi pesan */
+        .message-description {
+            font-weight: 400;
+            font-size: 16px;
+            color: white;
+            margin-top: 10px;
+        }
+
+        /* Sidebar toggle button */
+        .sidebar-toggle {
+            position: absolute;
+            right: -59px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #194795;
+            color: white;
+            border: none;
+            padding: 0;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Sidebar collapsed state */
+        .sidebar-wrapper.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+            width: 100%;
+            height: 100%;
+        }
+
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .map-content {
+            flex-grow: 1;
+            height: 100%;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .map-content h3 {
+            margin: 0;
+        }
+        
+        /* Button Kecamatan */
+        .kecamatan-cari {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #194795;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            z-index: 100;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .kecamatan-button:hover {
+            background-color: #143a7a;
+        }
+        
+        /* Style untuk daftar sektor */
+        .sectors-list {
+            position: absolute;
+            top: 120px;
+            left: 79px;
+            width: calc(100% - 79px - 20px);
+            color: white;
+            display: none;
+        }
+        
+        /* Perbaikan styling untuk radio button dan teks */
+        .sector-item {
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.4;
+            display: flex;
+            align-items: center; /* Mengubah dari flex-start ke center */
+        }
+        
+        .sector-radio {
+            margin-right: 10px;
+            /* margin-top dihapus karena sudah menggunakan align-items: center */
+            transform: scale(1.2); /* Memperbesar sedikit radio button */
+        }
+        
+        .sector-label {
+            flex: 1;
+            padding-top: 2px; /* Sedikit penyesuaian vertikal */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tab-content" id="investmentTabContent">
+        <div class="tab-pane fade show active" id="map-tab-pane" role="tabpanel" tabindex="0">
+            <div class="map-container">
+                <div class="sidebar-wrapper" id="sidebar-container">
+                    <div class="map-sidebar" id="sidebar">
+                        <h5 class="sidebar-title">Sebaran Titik Usaha</h5>
+                        <hr>
+                        <div class="message-container" id="message-container">
+                            <h5 class="message-title">Tidak ada inputan !!</h5>
+                            <p class="message-description">Lakukan filtering pada peta untuk mendapatkan klasifikasi data</p>
+                        </div>
+                        <div class="sectors-list" id="sectors-list">
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Pertanian, Kehutanan, dan Perikanan</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Pertambangan dan Penggalian</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Industri Pengolahan</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Pengadaan Listrik, Gas, Uap/Air Panas dan Udara Dingin</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Treatment Air, Treatment Air Limbah, Treatment dan Pemulihan Material Sampah, dan Aktivitas Remediasi</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Konstruksi</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Perdagangan Besar dan Eceran; Reparasi Dan Perawatan Mobil Dan Sepeda Motor</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Pengangkutan dan Pergudangan</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Penyediaan Akomodasi Dan Penyediaan Makan Minum</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Informasi Dan Komunikasi</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Aktivitas Keuangan dan Asuransi</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Real Estat</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Aktivitas Profesional, Ilmiah Dan Teknis</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Aktivitas Penyewaan dan Sewa Guna Usaha Tanpa Hak Opsi, Ketenagakerjaan, Agen Perjalanan dan Penunjang Usaha Lainnya</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Administrasi Pemerintahan, Pertahanan Dan Jaminan Sosial Wajib</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Pendidikan</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Aktivitas Kesehatan Manusia Dan Aktivitas Sosial</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Kesenian, Hiburan Dan Rekreasi</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Aktivitas Jasa Lainnya</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Aktivitas Rumah Tangga Sebagai Pemberi Kerja; Aktivitas Yang Menghasilkan Barang Dan Jasa Oleh Rumah Tangga yang Digunakan untuk Memenuhi Kebutuhan Sendiri</span>
+                            </label>
+                            <label class="sector-item">
+                                <input type="radio" name="sector" class="sector-radio">
+                                <span class="sector-label">Sektor Aktivitas Badan Internasional Dan Badan Ekstra Internasional Lainnya</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button id="sidebar-toggle" class="sidebar-toggle">
+                        <img src="Group1.svg" alt="Toggle Sidebar" id="toggle-icon" class="toggle-icon">
+                    </button>
+                </div>
+                <div class="map-content" id="map-content">
+                    <button class="kecamatan-cari" id="kecamatan-cari">Cari</button>
+                    <h3>Area Peta</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Toggle sidebar functionality
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarContainer = document.getElementById('sidebar-container');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            sidebarToggle.addEventListener('click', function() {
+                sidebarContainer.classList.toggle('collapsed');
+                toggleIcon.classList.toggle('rotated');
+            });
+            
+            // Kecamatan button functionality
+            const cariButton = document.getElementById('kecamatan-cari');
+            const messageContainer = document.getElementById('message-container');
+            const sectorsList = document.getElementById('sectors-list');
+            
+            cariButton.addEventListener('click', function() {
+                // Toggle tampilan antara pesan default dan daftar sektor
+                if (messageContainer.style.display === 'none') {
+                    messageContainer.style.display = 'block';
+                    sectorsList.style.display = 'none';
+                } else {
+                    messageContainer.style.display = 'none';
+                    sectorsList.style.display = 'block';
+                }
+            });
+            
+            // Radio button functionality
+            const radioButtons = document.querySelectorAll('.sector-radio');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        console.log('Sektor terpilih:', this.nextElementSibling.textContent);
+                        // Di sini Anda bisa menambahkan logika untuk menangani seleksi sektor
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
