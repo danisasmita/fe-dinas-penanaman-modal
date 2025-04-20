@@ -11,6 +11,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Montserrat from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="datakoordinat.php"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,9 +33,37 @@
         }
 
         .description {
-            padding-top: 20px;
-            padding-bottom: 20px;
-            height: 200px;
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            border-bottom-right-radius: 30px;
+        }
+
+        .image-slider {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+
+        .overlay-text {
+            position: absolute;
+            z-index: 2;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
         }
 
         .bupati-profile {
@@ -290,6 +324,251 @@
             align-items: center;
             justify-content: center;
         }
+
+        .map-container {
+            display: flex;
+            height: 667px;
+            position: relative;
+        }
+
+        .sidebar-wrapper {
+            position: relative;
+            z-index: 999;
+            width: 458px;
+            height: 100%;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .map-sidebar {
+            background-color: #194795;
+            color: white;
+            padding: 20px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Style untuk judul utama "Sebaran Titik Usaha" */
+        .sidebar-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            position: absolute;
+            left: 79px;
+            top: 32px;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Garis pemisah */
+        .map-sidebar hr {
+            margin-top: 70px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Container untuk pesan utama */
+        .message-container {
+            position: absolute;
+            top: 120px;
+            left: 79px;
+            width: calc(100% - 79px - 20px);
+        }
+
+        /* Judul pesan "Tidak ada inputan !!" */
+        .message-title {
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        /* Deskripsi pesan */
+        .message-description {
+            font-weight: 400;
+            font-size: 16px;
+            color: white;
+            margin-top: 10px;
+        }
+
+        /* Sidebar toggle button */
+        .sidebar-toggle {
+            position: absolute;
+            right: -50px;
+            top: 50%;
+            height: 100px;
+            width: 50px;
+            transform: translateY(-50%);
+            background-color: #194795;
+            color: white;
+            border: none;
+            padding: 0;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Sidebar collapsed state */
+        .sidebar-wrapper.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+            width: 55%;
+            height: 55%;
+        }
+
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .map-content {
+            flex-grow: 1;
+            height: 100%;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .map-content h3 {
+            margin: 0;
+        }
+
+        /* Button Sorting */
+        .kecamatan-cari {
+            background-color: #194795;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            z-index: 100;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .sorting-sektor {
+            z-index: 999;
+            top: 10px;
+            right: 10px;
+            position: absolute;
+
+
+            display: flex;
+            gap: 10px;
+
+
+
+
+        }
+
+        .sorting-sektor select {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            appearance: none;
+            /* hilangkan default panah */
+            background-color: white;
+            font-size: 16px;
+        }
+
+        #kecamatan-cari {
+            background-color: #48BA4C;
+            position: absolute;
+            color: white;
+            padding: 5px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #kelurahan-dropdown {
+            background-color: white;
+            padding: 5px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+
+        }
+
+        #kecamatan-dropdown {
+            background-color: white;
+            padding: 5px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+
+        }
+
+        .kecamatan-button:hover {
+            background-color: #143a7a;
+        }
+
+        #cari-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            padding: 5px 16px;
+            cursor: pointer;
+        }
+
+        /* Style untuk daftar sektor */
+        .sectors-list {
+            position: absolute;
+            top: 120px;
+            left: 79px;
+            width: calc(100% - 79px - 20px);
+            color: white;
+            display: none;
+        }
+
+        /* Perbaikan styling untuk radio button dan teks */
+        .sector-item {
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            /* Mengubah dari flex-start ke center */
+        }
+
+        .sector-radio {
+            margin-right: 10px;
+            /* margin-top dihapus karena sudah menggunakan align-items: center */
+            transform: scale(1.2);
+            /* Memperbesar sedikit radio button */
+        }
+
+        .sector-label {
+            flex: 1;
+            padding-top: 2px;
+            /* Sedikit penyesuaian vertikal */
+        }
+
+        .custom-marker {
+            width: 50px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+        }
+
+        .custom-marker img {
+            width: 65%;
+            height: 65%;
+            object-fit: contain;
+        }
     </style>
 </head>
 
@@ -339,8 +618,14 @@
     <div class="bupati-section">
         <div class="row">
             <div class="col-md-7">
-                <div class="container bg-primary description">
-                    <div>video</div>
+                <div class=" description">
+                    <div class="overlay-text">Teks 1 - Lorem ipsum dolor sit amet.</div>
+                    <div class="image-slider" id="slider">
+                        <div class="slide" style="background-image: url('Bg\ Deskripsi\ 1.svg');"></div>
+                        <div class="slide" style="background-image: url('Bg\ Deskripsi\ 2.svg');"></div>
+                        <div class="slide" style="background-image: url('Bg\ Deskripsi\ 3.svg');"></div>
+                        <div class="slide" style="background-image: url('Bg\ Deskripsi\ 1.svg');"></div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-5">
@@ -367,7 +652,7 @@
             </div>
             <div class="col-md-9">
                 <div
-                    style="background-color: #1a4785; height: 80px; border-top-left-radius: 20px; border-top-right-radius: 20px; overflow: hidden;">
+                    style="background-color: #1a4785; height: 80px; border-top-left-radius: 20px; border-top-right-radius: 20px; ">
                     <div style="display: flex; height: 100%;">
                         <button class="menu-button"
                             style="flex: 1; border: none; background-color: transparent; color: white; border-right: 1px solid white; padding: 10px 20px;">
@@ -376,32 +661,46 @@
                         </button>
                         <button class="menu-button middle"
                             style="flex: 1; border: none; background-color: transparent; color: white; border-left: 1px solid white; border-right: 1px solid white; padding: 10px 20px;">
-                            <img src="Menu 2 Icon.svg" alt="Menu 2 Icon" height="30">
+                            <img src="Menu 2 Icon.svg" alt="Menu 2 Icon" height="30" class="fw-bold">
                             STATISTIK INVESTASI
                         </button>
                         <button class="menu-button middle"
                             style="flex: 1; border: none; background-color: transparent; color: white; border-left: 1px solid white; border-right: 1px solid white; padding: 10px 20px;">
-                            <img src="Menu 3 Icon.svg" alt="Menu 3 Icon" height="30" class="me-2">
+                            <img src="Menu 3 Icon.svg" alt="Menu 3 Icon" height="30" class="me-2 fw-bold">
                             BERITA
                         </button>
-                        <button class="menu-button last"
-                            style="flex: 1; border: none; background-color: transparent; color: white; border-left: 1px solid white; padding: 10px 30px;">
-                            <a href="#" class="nav-link d-flex align-items-center justify-content-center" id="more-tab"
-                                data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;">
-                                <img src="Menu 4 Icon.svg" alt="Menu 4 Icon" height="30" class="me-2">
-                                INFORMASI LAINNYA
-                                <img src="Dropdown Icon.svg" alt="Dropdown Icon" height="15" class="me-2"
-                                    style="margin-left: 12px;">
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="more-tab">
-                                <li><a class="dropdown-item" href="#">MPP Lamsel</a></li>
-                                <li><a class="dropdown-item" href="#">Proses Perizinan</a></li>
-                                <li><a class="dropdown-item" href="#">Regulasi</a></li>
-                                <li><a class="dropdown-item" href="#">KBLI 2020</a></li>
-                                <li><a class="dropdown-item" href="#">Profil Daerah</a></li>
-                                <li><a class="dropdown-item" href="#">Artikel Berita</a></li>
+                        <button id="menuButton" class="menu-button last; menu-dropdown-container;" style="flex: 1; border: none; background-color: transparent; color: white; border-left: 1px
+                            solid white; padding: 10px 30px; position: relative; display: inline-block;">
+                            <img src="Menu 4 Icon.svg" alt="Menu 4 Icon" height="30" class="fw-bold">
+                            INFORMASI LAINNYA
+                            <img src="Dropdown Icon.svg" alt="Dropdown Icon" height="15" class="fw-bold"
+                                style="margin-left: 12px;">
+                            <!-- Dropdown -->
+                            <ul id="dropdownMenu" class="dropdown-menu"
+                                style="display: none; position: absolute; left: 0; top: 100%; margin-top: 10px; background: white; z-index: 9999; list-style: none; padding: 10px 0; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); min-width: 200px;">
+                                <li><a class="dropdown-item" href="#"
+                                        style="display: block; padding: 8px 20px; color: black; text-decoration: none;">MPP
+                                        Lamsel</a></li>
+                                <li><a class="dropdown-item" href="#"
+                                        style="display: block; padding: 8px 20px; color: black; text-decoration: none;">Proses
+                                        Perizinan</a></li>
+                                <li><a class="dropdown-item" href="#"
+                                        style="display: block; padding: 8px 20px; color: black; text-decoration: none;">Regulasi</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#"
+                                        style="display: block; padding: 8px 20px; color: black; text-decoration: none;">KBLI
+                                        2020</a></li>
+                                <li><a class="dropdown-item" href="#"
+                                        style="display: block; padding: 8px 20px; color: black; text-decoration: none;">Profil
+                                        Daerah</a></li>
+                                <li><a class="dropdown-item" href="#"
+                                        style="display: block; padding: 8px 20px; color: black; text-decoration: none;">Artikel
+                                        Berita</a></li>
                             </ul>
                         </button>
+
+
+
                     </div>
                 </div>
             </div>
@@ -411,156 +710,128 @@
 
 
 
-    <!-- Tab Content -->
-    <div class="tab-content" id="investmentTabContent">
-        <div class="tab-pane fade show active" id="map-tab-pane" role="tabpanel" tabindex="0">
-            <div class="map-container">
-                <div class="row g-0 h-100">
-                    <div class="col-md-3">
-                        <div class="map-sidebar">
-                            <h5>Sebaran Titik Usaha</h5>
-                            <hr>
-                            <p class="mb-3">Tidak ada inputan I!</p>
-                            <p>Lakukan filtering pada peta untuk mendapatkan klasifikasi data</p>
-                        </div>
-                    </div>
-                    <div class="col-md-9 position-relative">
-                        <img src="/api/placeholder/800/300" alt="Map" class="w-100 h-100" style="object-fit: cover;">
-
-                        <div class="position-absolute top-0 end-0 m-3 filter-box">
-                            <!-- Horizontal Filter Row -->
-                            <div class="filter-row">
-                                <!-- Search Box -->
-                                <div class="search-box filter-item">
-                                    <i class="fas fa-search"></i>
-                                    <input type="text" class="form-control" placeholder="Search">
-                                </div>
-
-                                <!-- Kecamatan Dropdown -->
-                                <div class="dropdown filter-item">
-                                    <button class="dropdown-btn dropdown-toggle" type="button" id="kecamatanDropdown"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                        Kecamatan
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="kecamatanDropdown">
-                                        <li><a class="dropdown-item" href="#">Natar</a></li>
-                                        <li><a class="dropdown-item" href="#">Rantaudjaja-hilir</a></li>
-                                        <li><a class="dropdown-item" href="#">Way Kambas National Park</a></li>
-                                        <li><a class="dropdown-item" href="#">Subadana</a></li>
-                                        <li><a class="dropdown-item" href="#">bang Baru</a></li>
-                                        <li><a class="dropdown-item" href="#">Dippara</a></li>
-                                        <li><a class="dropdown-item" href="#">Mao</a></li>
-                                    </ul>
-                                </div>
-
-                                <!-- Jenis Usaha Dropdown -->
-                                <!-- <div class="dropdown filter-item">
-                <button class="dropdown-btn dropdown-toggle" type="button" id="jenisUsahaDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Jenis Usaha
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="jenisUsahaDropdown">
-                    <li><a class="dropdown-item" href="#">Pertanian</a></li>
-                    <li><a class="dropdown-item" href="#">Perdagangan</a></li>
-                    <li><a class="dropdown-item" href="#">Industri</a></li>
-                    <li><a class="dropdown-item" href="#">Jasa</a></li>
-                </ul>
-            </div> -->
-
-                                <!-- Kategori Dropdown -->
-                                <!-- <div class="dropdown filter-item">
-                <button class="dropdown-btn dropdown-toggle" type="button" id="kategoriDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Kategori
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="kategoriDropdown">
-                    <li><a class="dropdown-item" href="#">Kecil</a></li>
-                    <li><a class="dropdown-item" href="#">Menengah</a></li>
-                    <li><a class="dropdown-item" href="#">Besar</a></li>
-                </ul>
-            </div> -->
-
-                                <!-- Search Button -->
-                                <button class="btn btn-success btn-cari">Cari</button>
-                            </div>
-
-                            <!-- Batas Wilayah Checkbox -->
-                            <div class="checkbox-container">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="batasWilayah" checked>
-                                    <label class="form-check-label" for="batasWilayah">Batas Wilayah</label>
-                                </div>
-                            </div>
-
-                            <!-- Titik Usaha Checkbox -->
-                            <div class="checkbox-container">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="titikUsaha" checked>
-                                    <label class="form-check-label" for="titikUsaha">Titik Usaha</label>
-                                </div>
-                            </div>
-
-                            <!-- Map/Satellite Toggle -->
-                            <div class="map-toggle-container">
-                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                    <label class="btn btn-outline-secondary active">
-                                        <input type="radio" name="mapType" id="map" autocomplete="off" checked>
-                                        Map
-                                    </label>
-                                    <label class="btn btn-outline-secondary">
-                                        <input type="radio" name="mapType" id="satellite" autocomplete="off">
-                                        Satellite
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Zoom Controls -->
-                            <div class="zoom-controls">
-                                <button class="btn btn-light zoom-btn"><i class="fas fa-plus"></i></button>
-                                <button class="btn btn-light zoom-btn"><i class="fas fa-minus"></i></button>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Map Content -->
+    <div id="map" style="height: 530px;">
+        <div class="sidebar-wrapper" id="sidebar-container">
+            <div class="map-sidebar" id="sidebar">
+                <h5 class="sidebar-title">Sebaran Titik Usaha</h5>
+                <hr>
+                <div class="message-container" id="message-container">
+                    <h5 class="message-title">Tidak ada inputan !!</h5>
+                    <p class="message-description">Lakukan filtering pada peta untuk mendapatkan klasifikasi data</p>
+                </div>
+                <div class="sectors-list" id="sectors-list">
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Pertanian, Kehutanan, dan Perikanan</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Pertambangan dan Penggalian</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Industri Pengolahan</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Pengadaan Listrik, Gas, Uap/Air Panas dan Udara Dingin</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Treatment Air, Treatment Air Limbah, Treatment dan Pemulihan
+                            Material Sampah, dan Aktivitas Remediasi</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Konstruksi</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Perdagangan Besar dan Eceran; Reparasi Dan Perawatan Mobil Dan
+                            Sepeda Motor</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Pengangkutan dan Pergudangan</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Penyediaan Akomodasi Dan Penyediaan Makan Minum</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Informasi Dan Komunikasi</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Aktivitas Keuangan dan Asuransi</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Real Estat</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Aktivitas Profesional, Ilmiah Dan Teknis</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Aktivitas Penyewaan dan Sewa Guna Usaha Tanpa Hak Opsi,
+                            Ketenagakerjaan, Agen Perjalanan dan Penunjang Usaha Lainnya</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Administrasi Pemerintahan, Pertahanan Dan Jaminan Sosial
+                            Wajib</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Pendidikan</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Aktivitas Kesehatan Manusia Dan Aktivitas Sosial</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Kesenian, Hiburan Dan Rekreasi</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Aktivitas Jasa Lainnya</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Aktivitas Rumah Tangga Sebagai Pemberi Kerja; Aktivitas Yang
+                            Menghasilkan Barang Dan Jasa Oleh Rumah Tangga yang Digunakan untuk Memenuhi Kebutuhan
+                            Sendiri</span>
+                    </label>
+                    <label class="sector-item">
+                        <input type="radio" name="sector" class="sector-radio">
+                        <span class="sector-label">Sektor Aktivitas Badan Internasional Dan Badan Ekstra Internasional
+                            Lainnya</span>
+                    </label>
                 </div>
             </div>
+            <button id="sidebar-toggle" class="sidebar-toggle">
+                <img src="Group1.svg" alt="Toggle Sidebar" id="toggle-icon" class="toggle-icon">
+            </button>
         </div>
-    </div>
+        <div class="sorting-sektor">
+            <div class="kecamatan-dropdown" id="kecamatan-dropdown">
+                <option value="">Kecamatan</option>
+                <!-- Isi data kecamatan -->
+            </div>
 
-    <div
-        style="background-color: #1a4785; height: 80px; margin: 50px 0px 0px 0px; border-top-left-radius: 20px; border-top-right-radius: 20px; overflow: hidden;">
-        <div style="display: flex; height: 100%;">
-            <button class="menu-button"
-                style="flex: 1; border: none; background-color: transparent; color: white; border-right: 1px solid white;">
-                <img src="Menu 1 Icon.svg" alt="Menu 1 Icon" height="30" class="me-2">
-                PETA INVESTASI
-            </button>
-            <button class="menu-button middle"
-                style="flex: 1; border: none; background-color: transparent; color: white; border-left: 1px solid white; border-right: 1px solid white;">
-                <img src="Menu 2 Icon.svg" alt="Menu 2 Icon" height="30" class="me-2">
-                STATISTIK INVESTASI
-            </button>
-            <button class="menu-button middle"
-                style="flex: 1; border: none; background-color: transparent; color: white; border-left: 1px solid white; border-right: 1px solid white;">
-                <img src="Menu 3 Icon.svg" alt="Menu 3 Icon" height="30" class="me-2">
-                BERITA
-            </button>
-            <button class="menu-button last"
-                style="flex: 1; border: none; background-color: transparent; color: white; border-left: 1px solid white;">
-                <a href="#" class="nav-link d-flex align-items-center justify-content-center" id="more-tab"
-                    data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;">
-                    <img src="Menu 4 Icon.svg" alt="Menu 4 Icon" height="30" class="me-2">
-                    INFORMASI LAINNYA
-                    <img src="Dropdown Icon.svg" alt="Dropdown Icon" height="15" class="me-2"
-                        style="margin-left: 12px;">
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="more-tab">
-                    <li><a class="dropdown-item" href="#">MPP Lamsel</a></li>
-                    <li><a class="dropdown-item" href="#">Proses Perizinan</a></li>
-                    <li><a class="dropdown-item" href="#">Regulasi</a></li>
-                    <li><a class="dropdown-item" href="#">KBLI 2020</a></li>
-                    <li><a class="dropdown-item" href="#">Profil Daerah</a></li>
-                    <li><a class="dropdown-item" href="#">Artikel Berita</a></li>
-                </ul>
-            </button>
+            <div class="kelurahan-dropdown" id="kelurahan-dropdown">
+                <option value="">Kelurahan</option>
+                <!-- Isi data kelurahan -->
+            </div>
+            <button class="cari-button" id="cari-button">Cari</button>
         </div>
+
+
     </div>
 
     <!-- Carousel Section -->
@@ -612,42 +883,365 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer">
-        <div class="d-flex align-items-center mb-3">
-            <a href="#"><img src="DPMPTSP Icon.svg" alt="DPMPTSP" height="32" class="me-3"></a>
-            <div class="me-3 text-white fw-bold custom-font font-montserrat">Dinas Penanaman Modal dan Pelayanan Terpadu
-                Satu Pintu (DPMPTSP)</div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="ratio ratio-16x9">
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/fdS_9sUagKY?si=uj-Qx4JgX0V4bhDF"
-                        title="YouTube video player" frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <footer style="background-color: #1a4785;" class="text-white pt-4">
+        <div class="container">
+            <div class="d-flex align-items-center mb-4">
+                <img src="DPMPTSP Icon.svg" alt="DPMPTSP" height="20" class="me-3" />
+                <div class="mb-0 fw-bold">Dinas Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu (DPMPTSP)</div>
+            </div>
+
+            <div class="row gx-8"> <!-- gx-5 menambah jarak horizontal antar kolom -->
+                <!-- Video -->
+                <div class="col-md-4 mb-4">
+                    <div class="ratio ratio-16x9">
+                        <iframe width="560" height="315"
+                            src="https://www.youtube.com/embed/fdS_9sUagKY?si=uj-Qx4JgX0V4bhDF"
+                            title="YouTube video player" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- Kontak -->
+                <div class="col-md-5 mb-4"> <!-- px-3 menambah jarak dalam kontainer -->
+                    <h6 class="text-white mb-3">Contact us :</h6>
+                    <div class="d-flex mb-3">
+                        <div class="me-4 d-flex align-items-center">
+                            <img src="Email Icon.svg" alt="Email" width="24" height="24" class="me-2" />
+                            <span class="fw-bold" style="font-size: 13px;">Email</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <img src="Whatsapp Icon.svg" alt="Whatsapp" width="24" height="24" class="me-2" />
+                            <span class="fw-bold" style="font-size: 13px;">Whatsapp</span>
+                        </div>
+                    </div>
+
+                    <p class="mb-0" style="font-size: 13px;"><strong>Kantor Pusat :</strong></p>
+                    <p class="mb-2" style="font-size: 13px;">Jl. Trans Sumatra depan Patung Bundaran Raden Intan
+                        Kel. Way Urang, Kec.
+                        Kalianda, Kabupaten Lampung Selatan, Lampung 35551</p>
+                    <p class="mb-0" style="font-size: 13px;">&copy; 2025 DPMPTSP - Potensi Lampung Selatan</p>
+                </div>
+
+                <!-- Media Sosial -->
+                <div class="col-md-3 mb-4">
+                    <h6 class="text-white mb-3">Follow us in :</h6>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center mb-1">
+                            <img src="Facebook Icon.svg" alt="Facebook" width="24" height="24" class="me-2" />
+                            <span class="fw-bold" style="font-size: 13px;">Facebook</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-1">
+                            <img src="Dribbble Icon.svg" alt="Dribble" width="24" height="24" class="me-2" />
+                            <span class="fw-bold" style="font-size: 13px;">Dribble</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-1">
+                            <img src="Linkedin Icon.svg" alt="LinkedIn" width="24" height="24" class="me-2" />
+                            <span class="fw-bold" style="font-size: 13px;">Linkedin</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-1">
+                            <img src="Twitter Icon.svg" alt="Twitter" width="24" height="24" class="me-2" />
+                            <span class="fw-bold" style="font-size: 13px;">Twitter</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="social-icons">
-                    <a href="#"><img src="Facebook Icon.svg" alt="Facebook" width="20" height="20"></a>
-                    <a href="#"><img src="Twitter Icon.svg" alt="Twitter" width="20" height="20"></a>
-                    <a href="#"><img src="Linkedin Icon.svg" alt="LinkedIn" width="20" height="20"></a>
-                    <a href="#"><img src="Dribbble Icon.svg" alt="Website" width="20" height="20"></a>
-                </div>
-                <p>Kantor Pusat :</p>
-                <p>Jl. Trans Sumatra depan Patung Bundaran Raden Intan Kel. Way Urang, Kec. Kalianda, Kabupaten Lampung
-                    Selatan,
-                    Lampung 35551</p>
-            </div>
         </div>
-    </div>
-    </div>
+    </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="datakoordinat.js"></script>
     <script>
+
+        // Script Leaflet
+        const map = L.map('map', {
+            center: [-5.746012, 105.537655],
+            zoom: 12,
+            zoomControl: false
+        });
+        const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 12,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        L.control.zoom({
+            position: 'bottomright'
+        }).addTo(map);
+
+        // Fungsi untuk menentukan icon berdasarkan sektor
+        function getCustomIcon(sektor) {
+            let iconSrc = "";
+
+            switch (sektor) {
+                case "Pertanian, Kehutanan, dan Perikanan":
+                    iconSrc = "A.svg";
+                    break;
+                case "Pertambangan dan Penggalian":
+                    iconSrc = "B.svg";
+                    break;
+                case "Industri Pengolahan":
+                    iconSrc = "C.svg";
+                    break;
+                case "Pengadaan Listrik, Gas, Uap/Air Panas Dan Udara Dingin":
+                    iconSrc = "D.svg";
+                    break;
+                case "Konstruksi":
+                    iconSrc = "E.svg";
+                    break;
+                default:
+                    iconSrc = "default.svg";
+            }
+
+            return L.divIcon({
+                className: '',
+                html: `
+                <div class="custom-marker">
+                    <img src="${iconSrc}" alt="Icon ${sektor}" />
+                </div>
+            `,
+                iconSize: [50, 70],
+                iconAnchor: [25, 70]
+            });
+        }
+
+        // Daftar marker dengan sektor dan koordinat
+        const markersData = [
+            {
+                lat: -5.733,
+                lng: 105.593,
+                sektor: "Pertanian, Kehutanan, dan Perikanan",
+                popup: "<b>Sektor Pertanian, Kehutanan, dan Perikanan</b><br>Wilayah Kalianda, Lampung Selatan."
+            },
+            {
+                lat: -5.74,
+                lng: 105.6,
+                sektor: "Pertambangan dan Penggalian",
+                popup: "<b>Sektor Pertambangan dan Penggalian</b><br>Wilayah Sidomulyo, Lampung Selatan."
+            },
+            {
+                lat: -5.75,
+                lng: 105.59,
+                sektor: "Industri Pengolahan",
+                popup: "<b>Sektor Industri Pengolahan</b><br>Wilayah Palas, Lampung Selatan."
+            },
+            {
+                lat: -5.76,
+                lng: 105.57,
+                sektor: "Pengadaan Listrik, Gas, Uap/Air Panas Dan Udara Dingin",
+                popup: "<b>Sektor Energi</b><br>Wilayah Bakauheni, Lampung Selatan."
+            },
+            {
+                lat: -5.73,
+                lng: 105.61,
+                sektor: "Konstruksi",
+                popup: "<b>Sektor Konstruksi</b><br>Wilayah Katibung, Lampung Selatan."
+            }
+        ];
+
+        // Tambahkan semua marker ke peta
+        markersData.forEach(data => {
+            const icon = getCustomIcon(data.sektor);
+            const marker = L.marker([data.lat, data.lng], { icon }).addTo(map);
+            marker.bindPopup(data.popup);
+        });
+
+
+
+        // Script Trigger Menu Button //
+        const button = document.getElementById('menuButton');
+        const dropdown = document.getElementById('dropdownMenu');
+
+        button.addEventListener('click', () => {
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Ambil dan tampilkan data polygon dari datakoordinat.php
+        fetch('datakoordinat.php')
+            .then(response => response.json())
+            .then(data => {
+                // Cek jika data berupa GeoJSON
+                if (data.type === "FeatureCollection") {
+                    L.geoJSON(data, {
+                        style: {
+                            color: "blue",
+                            weight: 2,
+                            opacity: 0.6,
+                            fillOpacity: 0.4
+                        },
+                        onEachFeature: function (feature, layer) {
+                            if (feature.properties && feature.properties.name) {
+                                layer.bindPopup(feature.properties.name);
+                            }
+                        }
+                    }).addTo(map);
+                } else {
+                    console.error("Data dari datakoordinat.php bukan GeoJSON");
+                }
+            })
+            .catch(error => {
+                console.error("Gagal memuat data koordinat:", error);
+            });
+
+        // Optional: klik di luar dropdown untuk menutup
+        document.addEventListener('click', function (e) {
+            if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
         function handleClick() {
         }
+
+        // Konversi koordinat 3D ke 2D (hilangkan nilai Z)
+        const allAreas = [kalianda, katibung1, katibung2, katibung3, katibung4, waysulan, waypanji, palas, penengahan,
+            jatiagung, tanjungbintang, tanjungsari, candipuro, rajabasa1, rajabasa2, rajabasa3, rajabasa4, rajabasa5,
+            rajabasa6a, rajabasa6b, rajabasa6c, rajabasa6d, rajabasa6e, rajabasa6f, rajabasa7a, rajabasa7b, rajabasa7c,
+            rajabasa8, rajabasa9, rajabasa10, rajabasa11, rajabasa12a, rajabasa12b, bakauheni1, bakauheni2, bakauheni3,
+            bakauheni4, bakauheni5, bakauheni6a, bakauheni6b, bakauheni7, bakauheni8a, bakauheni8b, bakauheni8c,
+            bakauheni8d, natar, sidomulyo, sragi, ketapang1a, ketapang1b, ketapang1c, ketapang2, ketapang3, ketapang4,
+            ketapang5, ketapang6, ketapang7, ketapang8, ketapang9, merbaumataram1, merbaumataram2, merbaumataram3,
+            merbaumataram4, merbaumataram5, merbaumataram6, merbaumataram7, merbaumataram8, merbaumataram9, merbaumataram10,
+            merbaumataram11, merbaumataram12, merbaumataram13, merbaumataram14];
+
+        // Hanya render untuk objek_name tertentu
+        const allowedNames = ["Kalianda", "Katibung", "Way Sulan", "Way Panji", "Palas", "Penengahan", "Jati Agung",
+            "Tanjung Bintang", "Tanjung Sari", "Candi Puro", "Raja Basa", "Bakauheni", "Natar", "Sidomulyo", "Sragi", "Ketapang", "Merbau Mataram"];
+
+        allAreas.forEach(area => {
+            if (allowedNames.includes(area.objek_name)) {
+                // Konversi koordinat 3D ke 2D (hilangkan Z)
+                const coordinates2D = area.coordinates.map(coord => [coord[1], coord[0]]); // lat, lng
+
+                // Tentukan warna berdasarkan nama objek
+                let color;
+                switch (area.objek_name) {
+                    case "Kalianda":
+                        color = "#FF5733";
+                        break;
+                    case "Katibung":
+                        color = "#33FF57";
+                        break;
+                    case "Way Sulan":
+                        color = "#3357FF";
+                        break;
+                    case "Way Panji":
+                        color = "#FF33A1";
+                        break;
+                    case "Palas":
+                        color = "#FF8C00";
+                        break;
+                    case "Penengahan":
+                        color = "#8A2BE2";
+                        break;
+                    case "Jati Agung":
+                        color = "#7FFF00";
+                        break;
+                    case "Tanjung Bintang":
+                        color = "#D2691E";
+                        break;
+                    case "Tanjung Sari":
+                        color = "#8B0000";
+                        break;
+                    case "Candi Puro":
+                        color = "#FF1493";
+                        break;
+                    case "Raja Basa":
+                        color = "#1E90FF";
+                        break;
+                    case "Bakauheni":
+                        color = "#ADFF2F";
+                        break;
+                    case "Natar":
+                        color = "#4B0082";
+                        break;
+                    case "Sidomulyo":
+                        color = "#FFD700";
+                        break;
+                    case "Sragi":
+                        color = "#B22222";
+                        break;
+                    case "Ketapang":
+                        color = "#00CED1";
+                        break;
+                    case "Merbau Mataram":
+                        color = "#20B2AA";
+                        break;
+                    default:
+                        color = "black"; // warna default
+                }
+
+                // Buat polygon dengan warna yang ditentukan
+                const polygon = L.polygon(coordinates2D, {
+                    color: color,
+                    weight: 2,
+                    opacity: 0.6,
+                    fillOpacity: 0.4
+                }).addTo(map);
+
+                polygon.bindPopup(area.objek_name);
+            }
+        });
+
+        // Script Transisi Bg Deskripsi
+        const slider = document.getElementById('slider');
+        let index = 0;
+        const slideWidth = 725;
+        const totalSlides = 4;
+        setInterval(() => {
+            index++;
+            slider.style.transition = 'transform 0.5s ease-in-out';
+            slider.style.transform = `translateX(-${index * slideWidth}px)`;
+
+            // Jika sudah mencapai slide duplikat (index 2), reset ke awal setelah animasi
+            if (index === totalSlides - 1) {
+                setTimeout(() => {
+                    slider.style.transition = 'none'; // matikan transisi agar tidak terlihat loncatan
+                    slider.style.transform = 'translateX(0px)'; // kembali ke slide pertama
+                    index = 0;
+                }, 500); // delay sedikit lebih dari durasi transisi (0.5s)
+            }
+        }, 3000);
+
+        // Script untuk Sidebar
+        document.addEventListener('DOMContentLoaded', function () {
+            // Toggle sidebar functionality
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarContainer = document.getElementById('sidebar-container');
+            const toggleIcon = document.getElementById('toggle-icon');
+
+            sidebarToggle.addEventListener('click', function () {
+                sidebarContainer.classList.toggle('collapsed');
+                toggleIcon.classList.toggle('rotated');
+            });
+
+            // Kecamatan button functionality
+            const cariButton = document.getElementById('cari-button');
+            const messageContainer = document.getElementById('message-container');
+            const sectorsList = document.getElementById('sectors-list');
+
+            cariButton.addEventListener('click', function () {
+                // Toggle tampilan antara pesan default dan daftar sektor
+                if (messageContainer.style.display === 'none') {
+                    messageContainer.style.display = 'block';
+                    sectorsList.style.display = 'none';
+                } else {
+                    messageContainer.style.display = 'none';
+                    sectorsList.style.display = 'block';
+                }
+            });
+
+            // Radio button functionality
+            const radioButtons = document.querySelectorAll('.sector-radio');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.checked) {
+                        console.log('Sektor terpilih:', this.nextElementSibling.textContent);
+                        // Di sini Anda bisa menambahkan logika untuk menangani seleksi sektsor
+                    }
+                });
+            });
+        });
+
+
         // Script untuk pencarian dan filter
         document.addEventListener('DOMContentLoaded', function () {
             // Fungsi untuk filter dropdown
