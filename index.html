@@ -18,6 +18,45 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="datakoordinat.php"></script>
     <style>
+
+        /* Style untuk modal table*/
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header {
+    background-color: #1a4785;
+    color: white;
+    border-bottom: none;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.modal-title {
+    font-weight: bold;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    border-top: none;
+    padding: 15px 20px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.btn-close {
+    filter: invert(1);
+}
         body {
             font-family: Arial, sans-serif;
             font-family: 'Montserrat', sans-serif;
@@ -1010,7 +1049,7 @@
                 lat: -5.733,
                 lng: 105.593,
                 sektor: "Pertanian, Kehutanan, dan Perikanan",
-                popup: "<b>Sektor Pertanian, Kehutanan, dan Perikanan</b><br>Wilayah Kalianda, Lampung Selatan."
+                popup: "<b>Sektor Pertanian, Kehutanan, dan Perikanan</b><br>Wilayah Kalianda, Lampung Selatan.",
             },
             {
                 lat: -5.74,
@@ -1054,42 +1093,6 @@
         button.addEventListener('click', () => {
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         });
-
-        // Ambil dan tampilkan data polygon dari datakoordinat.php
-        fetch('datakoordinat.php')
-            .then(response => response.json())
-            .then(data => {
-                // Cek jika data berupa GeoJSON
-                if (data.type === "FeatureCollection") {
-                    L.geoJSON(data, {
-                        style: {
-                            color: "blue",
-                            weight: 2,
-                            opacity: 0.6,
-                            fillOpacity: 0.4
-                        },
-                        onEachFeature: function (feature, layer) {
-                            if (feature.properties && feature.properties.name) {
-                                layer.bindPopup(feature.properties.name);
-                            }
-                        }
-                    }).addTo(map);
-                } else {
-                    console.error("Data dari datakoordinat.php bukan GeoJSON");
-                }
-            })
-            .catch(error => {
-                console.error("Gagal memuat data koordinat:", error);
-            });
-
-        // Optional: klik di luar dropdown untuk menutup
-        document.addEventListener('click', function (e) {
-            if (!button.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.style.display = 'none';
-            }
-        });
-        function handleClick() {
-        }
 
         // Konversi koordinat 3D ke 2D (hilangkan nilai Z)
         const allAreas = [kalianda, katibung1, katibung2, katibung3, katibung4, waysulan, waypanji, palas, penengahan,
@@ -1230,15 +1233,75 @@
             });
 
             // Radio button functionality
-            const radioButtons = document.querySelectorAll('.sector-radio');
-            radioButtons.forEach(radio => {
-                radio.addEventListener('change', function () {
-                    if (this.checked) {
-                        console.log('Sektor terpilih:', this.nextElementSibling.textContent);
+            // const radioButtons = document.querySelectorAll('.sector-radio');
+            // radioButtons.forEach(radio => {
+            //     radio.addEventListener('change', function () {
+            //         if (this.checked) {
+            //             console.log('Sektor terpilih:', this.nextElementSibling.textContent);
                         // Di sini Anda bisa menambahkan logika untuk menangani seleksi sektsor
-                    }
-                });
-            });
+                    // }
+            //     });
+            // });
+
+            const radioButtons = document.querySelectorAll('.sector-radio');
+radioButtons.forEach(radio => {
+    radio.addEventListener('change', function() {
+        if (this.checked) {
+            const selectedSector = this.nextElementSibling.textContent.trim();
+            console.log('Sektor terpilih:', selectedSector);
+            
+            // Map antara label radio button dan nilai sektor di markersData
+            const sectorMap = {
+                "Sektor Pertanian, Kehutanan, dan Perikanan": "Pertanian, Kehutanan, dan Perikanan",
+                "Sektor Pertambangan dan Penggalian": "Pertambangan dan Penggalian",
+                "Sektor Industri Pengolahan": "Industri Pengolahan",
+                "Sektor Pengadaan Listrik, Gas, Uap/Air Panas dan Udara Dingin": "Pengadaan Listrik, Gas, Uap/Air Panas Dan Udara Dingin",
+                "Sektor Konstruksi": "Konstruksi"
+                // Tambahkan mapping untuk sektor lainnya jika ada
+            };
+            
+            // Dapatkan nilai sektor yang sesuai dengan data markersData
+            const sectorValue = sectorMap[selectedSector] || selectedSector;
+            
+            showSectorData(sectorValue);
+        }
+    });
+});
+
+// Fungsi untuk menampilkan data berdasarkan sektor yang dipilih
+function showSectorData(selectedSector) {
+    // Filter data berdasarkan sektor yang dipilih
+    const filteredData = markersData.filter(data => 
+        data.sektor === selectedSector
+    );
+    
+    // Isi tabel dengan data yang difilter
+    const tableBody = document.getElementById('sectorTableBody');
+    tableBody.innerHTML = '';
+    
+    if (filteredData.length > 0) {
+        filteredData.forEach((data, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${data.sektor}</td>
+                <td>${data.popup.replace(/<[^>]*>/g, '').split('<br>')[1]}</td>
+                <td>${data.lat.toFixed(6)}, ${data.lng.toFixed(6)}</td>
+                <td>${data.popup.replace(/<[^>]*>/g, '')}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+        
+        // Update judul modal sesuai sektor
+        document.getElementById('sectorModalLabel').textContent = `Detail ${selectedSector}`;
+        
+        // Tampilkan modal
+        const modal = new bootstrap.Modal(document.getElementById('sectorModal'));
+        modal.show();
+    } else {
+        alert(`Tidak ada data untuk ${selectedSector}`);
+    }
+}
         });
 
 
@@ -1284,6 +1347,37 @@
             });
         });
     </script>
+
+    <!-- Modal untuk Popup Table -->
+<div class="modal fade" id="sectorModal" tabindex="-1" aria-labelledby="sectorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="sectorModalLabel">Detail Sektor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Usaha</th>
+                <th>Lokasi</th>
+                <th>Koordinat</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="sectorTableBody">
+              <!-- Data akan diisi oleh JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
