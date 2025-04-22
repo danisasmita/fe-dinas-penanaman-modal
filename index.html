@@ -1124,10 +1124,10 @@
             subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
             attribution: '&copy; <a href="https://maps.google.com/">Google Satellite</a>'
         });
-        openStreetMap.addTo(map);
+        googleMap.addTo(map);
         const baseMaps = {
-            "OpenStreetMap": openStreetMap,
             "Google Maps": googleMap,
+            "OpenStreet Map": openStreetMap,
             "Google Satellite": googleSatellite,
         };
         L.control.layers(baseMaps).addTo(map);
