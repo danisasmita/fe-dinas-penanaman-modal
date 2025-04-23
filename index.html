@@ -18,6 +18,18 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="datakoordinat.php"></script>
     <style>
+
+        /* Tambahkan di CSS */
+.kelurahan-dropdown.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.filter-info {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
         /* Style untuk modal table*/
         .modal-content {
             border-radius: 10px;
@@ -1048,7 +1060,8 @@
                             src="https://www.youtube.com/embed/fdS_9sUagKY?si=uj-Qx4JgX0V4bhDF"
                             title="YouTube video player" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen></iframe>
+                            allowfullscreen>
+                        </iframe>
                     </div>
                 </div>
 
@@ -1179,6 +1192,7 @@
                 sektor: "Pertanian, Kehutanan, dan Perikanan",
                 popup: "<b>Sektor Pertanian, Kehutanan, dan Perikanan</b><br>Wilayah Kalianda, Lampung Selatan.",
                 kecamatan: "Kalianda",
+                kelurahan: "",
             },
             {
                 lat: -5.610971,
@@ -1186,6 +1200,7 @@
                 sektor: "Pertambangan dan Penggalian",
                 popup: "<b>Sektor Pertambangan dan Penggalian</b><br>Wilayah Sidomulyo, Lampung Selatan.",
                 kecamatan: "Sidomulyo",
+                kelurahan: "",
             },
             {
                 lat: -5.667598,
@@ -1193,6 +1208,7 @@
                 sektor: "Industri Pengolahan",
                 popup: "<b>Sektor Industri Pengolahan</b><br>Wilayah Palas, Lampung Selatan.",
                 kecamatan: "Palas",
+                kelurahan: "",
             },
             {
                 lat: -5.830495,
@@ -1200,6 +1216,7 @@
                 sektor: "Pengadaan Listrik, Gas, Uap/Air Panas Dan Udara Dingin",
                 popup: "<b>Sektor Energi</b><br>Wilayah Bakauheni, Lampung Selatan.",
                 kecamatan: "Bakauheni",
+                kelurahan: "",
             },
             {
                 lat: -5.567153,
@@ -1207,6 +1224,7 @@
                 sektor: "Konstruksi",
                 popup: "<b>Sektor Konstruksi</b><br>Wilayah Katibung, Lampung Selatan.",
                 kecamatan: "Katibung",
+                kelurahan: "Babatan",
             },
             {
                 lat: -5.337406,
@@ -1214,6 +1232,15 @@
                 sektor: "Konstruksi",
                 popup: "<b>Sektor Konstruksi</b><br>Wilayah Natar, Lampung Selatan.",
                 kecamatan: "Natar",
+                kelurahan: "Branti Raya",
+            },
+            {
+                lat: -5.229,
+                lng: 105.282,
+                sektor: "Konstruksi",
+                popup: "<b>Sektor Konstruksi</b><br>Wilayah Natar, Lampung Selatan.",
+                kecamatan: "Natar",
+                kelurahan: "Bandarejo",
             },
             {
                 lat: -5.394909,
@@ -1221,6 +1248,7 @@
                 sektor: "Konstruksi",
                 popup: "<b>Sektor Konstruksi</b><br>Wilayah Tanjung Bintang, Lampung Selatan.",
                 kecamatan: "Tanjung Bintang",
+                kelurahan: "",
             },
             {
                 lat: -5.499974,
@@ -1228,6 +1256,7 @@
                 sektor: "Konstruksi",
                 popup: "<b>Sektor Konstruksi</b><br>Wilayah Candipuro, Lampung Selatan.",
                 kecamatan: "Candipuro",
+                kelurahan: "",
             }
         ];
 
@@ -1370,143 +1399,217 @@
                 toggleIcon.classList.toggle('rotated');
             });
 
-            // Kecamatan button functionality
-            const cariButton = document.getElementById('cari-button');
-            const messageContainer = document.getElementById('message-container');
-            const sectorsList = document.getElementById('sectors-list');
+            // Event listener untuk tombol Cari
+    const cariButton = document.getElementById('cari-button');
+    const messageContainer = document.getElementById('message-container');
+    const sectorsList = document.getElementById('sectors-list');
 
-            cariButton.addEventListener('click', function () {
-                // Toggle tampilan antara pesan default dan daftar sektor
-                if (messageContainer.style.display === 'none') {
-                    messageContainer.style.display = 'block';
-                    sectorsList.style.display = 'none';
-                } else {
-                    messageContainer.style.display = 'none';
-                    sectorsList.style.display = 'block';
-                }
-            });
+    cariButton.addEventListener('click', function() {
+    // Reset semua radio button
+    document.querySelectorAll('.sector-radio').forEach(radio => {
+        radio.checked = false;
+    });
+    
+    // Tampilkan daftar sektor
+    messageContainer.style.display = 'none';
+    sectorsList.style.display = 'block';
+    
+    // Update pesan jika ada filter kecamatan/kelurahan
+    const selectedKecamatan = kecamatan_span.textContent !== 'Kecamatan' ? kecamatan_span.textContent : null;
+    const selectedKelurahan = kelurahan_span.textContent !== 'Kelurahan' ? kelurahan_span.textContent : null;
+    
+    if (selectedKecamatan || selectedKelurahan) {
+        const filterInfo = document.createElement('div');
+        filterInfo.className = 'filter-info';
+        filterInfo.style.color = 'white';
+        filterInfo.style.marginTop = '10px';
+        filterInfo.style.fontWeight = 'bold';
+        
+        let filterText = 'Pilih Sektor di : ';
+        if (selectedKecamatan) filterText += `Kecamatan ${selectedKecamatan}`;
+        if (selectedKelurahan) filterText += `, Kelurahan ${selectedKelurahan}`;
+        
+        filterInfo.textContent = filterText;
+        
+        // Hapus info filter sebelumnya jika ada
+        const oldFilterInfo = document.querySelector('.filter-info');
+        if (oldFilterInfo) oldFilterInfo.remove();
+        
+        sectorsList.insertBefore(filterInfo, sectorsList.firstChild);
+    }
+});
 
-            // Radio button functionality
-            // const radioButtons = document.querySelectorAll('.sector-radio');
-            // radioButtons.forEach(radio => {
-            //     radio.addEventListener('change', function () {
-            //         if (this.checked) {
-            //             console.log('Sektor terpilih:', this.nextElementSibling.textContent);
-            // Di sini Anda bisa menambahkan logika untuk menangani seleksi sektsor
-            // }
-            //     });
-            // });
-
+            // Event listener untuk radio button sektor
             const radioButtons = document.querySelectorAll('.sector-radio');
             radioButtons.forEach(radio => {
-                radio.addEventListener('change', function () {
-                    if (this.checked) {
-                        const selectedSector = this.nextElementSibling.textContent.trim();
-                        console.log('Sektor terpilih:', selectedSector);
+            radio.addEventListener('change', function() {
+            if (this.checked) {
+            const selectedSector = this.nextElementSibling.textContent.trim();
+            
+            // Map label radio ke nilai sektor di markersData
+            const sectorMap = {
+                "Sektor Pertanian, Kehutanan, dan Perikanan": "Pertanian, Kehutanan, dan Perikanan",
+                "Sektor Pertambangan dan Penggalian": "Pertambangan dan Penggalian",
+                "Sektor Industri Pengolahan": "Industri Pengolahan",
+                "Sektor Pengadaan Listrik, Gas, Uap/Air Panas dan Udara Dingin": "Pengadaan Listrik, Gas, Uap/Air Panas Dan Udara Dingin",
+                "Sektor Konstruksi": "Konstruksi"
+                // Tambahkan mapping lainnya jika perlu
+            };
 
-                        // Map antara label radio button dan nilai sektor di markersData
-                        const sectorMap = {
-                            "Sektor Pertanian, Kehutanan, dan Perikanan": "Pertanian, Kehutanan, dan Perikanan",
-                            "Sektor Pertambangan dan Penggalian": "Pertambangan dan Penggalian",
-                            "Sektor Industri Pengolahan": "Industri Pengolahan",
-                            "Sektor Pengadaan Listrik, Gas, Uap/Air Panas dan Udara Dingin": "Pengadaan Listrik, Gas, Uap/Air Panas Dan Udara Dingin",
-                            "Sektor Konstruksi": "Konstruksi"
-                            // Tambahkan mapping untuk sektor lainnya jika ada
-                        };
+            const sectorValue = sectorMap[selectedSector] || selectedSector;
+            
+            // Tampilkan data dengan filter kecamatan/kelurahan yang aktif
+            showSectorData(sectorValue);
+        }
+    });
+});
 
-                        // Dapatkan nilai sektor yang sesuai dengan data markersData
-                        const sectorValue = sectorMap[selectedSector] || selectedSector;
+           // Fungsi untuk menampilkan data berdasarkan filter
+function showSectorData(selectedSector) {
+    // Ambil nilai kecamatan dan kelurahan yang dipilih
+    const selectedKecamatan = kecamatan_span.textContent !== 'Kecamatan' ? kecamatan_span.textContent : null;
+    const selectedKelurahan = kelurahan_span.textContent !== 'Kelurahan' ? kelurahan_span.textContent : null;
 
-                        showSectorData(sectorValue);
-                    }
-                });
-            });
+    // Filter data berdasarkan pilihan
+    const filteredData = markersData.filter(data => {
+        const sectorMatch = data.sektor === selectedSector;
+        const kecamatanMatch = !selectedKecamatan || data.kecamatan === selectedKecamatan;
+        const kelurahanMatch = !selectedKelurahan || data.kelurahan === selectedKelurahan;
+        
+        return sectorMatch && kecamatanMatch && kelurahanMatch;
+    });
 
-            // Fungsi untuk menampilkan data berdasarkan sektor yang dipilih
-            function showSectorData(selectedSector) {
-                // Filter data berdasarkan sektor yang dipilih
-                const filteredData = markersData.filter(data =>
-                    data.sektor === selectedSector
-                );
+    // Isi tabel dengan data yang difilter
+    const tableBody = document.getElementById('sectorTableBody');
+    tableBody.innerHTML = '';
 
-                // Isi tabel dengan data yang difilter
-                const tableBody = document.getElementById('sectorTableBody');
-                tableBody.innerHTML = '';
-
-                if (filteredData.length > 0) {
-                    filteredData.forEach((data, index) => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
+    if (filteredData.length > 0) {
+        filteredData.forEach((data, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${data.sektor}</td>
-                <td>${data.popup.replace(/<[^>]*>/g, '').split('<br>')[1]}</td>
+                <td>${data.kecamatan}${data.kelurahan ? ', ' + data.kelurahan : ''}</td>
                 <td>${data.lat.toFixed(6)}, ${data.lng.toFixed(6)}</td>
                 <td>${data.popup.replace(/<[^>]*>/g, '')}</td>
             `;
-                        tableBody.appendChild(row);
-                    });
+            tableBody.appendChild(row);
+        });
 
-                    // Update judul modal sesuai sektor
-                    document.getElementById('sectorModalLabel').textContent = `Detail ${selectedSector}`;
-
-                    // Tampilkan modal
-                    const modal = new bootstrap.Modal(document.getElementById('sectorModal'));
-                    modal.show();
-                } else {
-                    alert(`Tidak ada data untuk ${selectedSector}`);
-                }
+        // Update judul modal
+        let modalTitle = `Detail ${selectedSector}`;
+        if (selectedKecamatan) {
+            modalTitle += ` - ${selectedKecamatan}`;
+            if (selectedKelurahan) {
+                modalTitle += `, ${selectedKelurahan}`;
             }
-        });
+        }
+        document.getElementById('sectorModalLabel').textContent = modalTitle;
 
-        // Script untuk Dropdown-Kecamatan
-        const kecamatan_dropdown = document.getElementById('kecamatan-dropdown');
-        const kecamatan_list = document.getElementById('kecamatan-list');
-        kecamatan_dropdown.addEventListener('click', function (e) {
-            e.stopPropagation();
-            kecamatan_list.style.display = kecamatan_list.style.display === 'block' ? 'none' : 'block';
-        });
-        document.addEventListener('click', function () {
-            kecamatan_list.style.display = 'none';
-        });
-
-        // Script untuk Dropdown-Kelurahan
-        const kelurahan_dropdown = document.getElementById('kelurahan-dropdown');
-        const kelurahan_list = document.getElementById('kelurahan-list');
-        kelurahan_dropdown.addEventListener('click', function (e) {
-            e.stopPropagation();
-            kelurahan_list.style.display = kelurahan_list.style.display === 'block' ? 'none' : 'block';
-        });
-        document.addEventListener('click', function () {
-            kelurahan_list.style.display = 'none';
-        });
-
-        // Script untuk pencarian dan filter
-        document.addEventListener('DOMContentLoaded', function () {
-            // Fungsi untuk filter dropdown
-            function filterDropdown(inputId, dropdownId) {
-                const input = document.getElementById(inputId);
-                const dropdown = document.getElementById(dropdownId);
-
-                input.addEventListener('input', function () {
-                    const filter = input.value.toUpperCase();
-                    const items = dropdown.getElementsByTagName('a');
-
-                    for (let i = 0; i < items.length; i++) {
-                        const txtValue = items[i].textContent || items[i].innerText;
-                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                            items[i].style.display = "";
-                        } else {
-                            items[i].style.display = "none";
-                        }
-                    }
-                });
+        // Tampilkan modal
+        const modal = new bootstrap.Modal(document.getElementById('sectorModal'));
+        modal.show();
+    } else {
+        let alertMessage = `Tidak ada data untuk sektor ${selectedSector}`;
+        if (selectedKecamatan) {
+            alertMessage += ` di kecamatan ${selectedKecamatan}`;
+            if (selectedKelurahan) {
+                alertMessage += `, kelurahan ${selectedKelurahan}`;
             }
+        }
+        alert(alertMessage);
+    }
+}
+        });
 
-            // Inisialisasi filter untuk setiap dropdown
-            filterDropdown('searchKecamatan', 'kecamatanDropdown');
-            filterDropdown('searchJenisUsaha', 'jenisUsahaDropdown');
-            filterDropdown('searchKategori', 'kategoriDropdown');
+    const kecamatanKelurahanMap = {
+    "Katibung": ["Babatan", "Karya Tunggal", "Neglasari"],
+    "Natar": ["Bandarejo", "Banjarnegeri", "Branti Raya"],
+    "Tanjung Bintang": ["Budi Lestari", "Galih Lunik", "Jati Baru"],
+    "Candipuro": ["Batuliman Indah", "Banyumas", "Beringin Kencana"],
+    "Bakauheni": ["Bakauheni", "Hatta", "Kelawi", "Semanak", "Totoharjo"],
+    "Sidomulyo": ["Girikarto", "Giriklopomulyo", "Hargomulyo"],
+    "Palas": ["Bali Agung", "Bangunan", "Bandan Hurip"]
+};
 
+// Script untuk Dropdown-Kecamatan
+const kecamatan_dropdown = document.getElementById('kecamatan-dropdown');
+const kecamatan_list = document.getElementById('kecamatan-list');
+const kecamatan_span = kecamatan_dropdown.querySelector('span');
+
+// Script untuk Dropdown-Kelurahan
+const kelurahan_dropdown = document.getElementById('kelurahan-dropdown');
+const kelurahan_list = document.getElementById('kelurahan-list');
+const kelurahan_span = kelurahan_dropdown.querySelector('span');
+
+// Event listener untuk kecamatan dropdown
+kecamatan_dropdown.addEventListener('click', function (e) {
+    e.stopPropagation();
+    kecamatan_list.style.display = kecamatan_list.style.display === 'block' ? 'none' : 'block';
+});
+
+// Tambahkan di event listener kelurahan_dropdown
+kelurahan_dropdown.addEventListener('click', function (e) {
+    if (kecamatan_span.textContent === 'Kecamatan') {
+        alert('Pilih Kecamatan terlebih dahulu');
+        return;
+    }
+    e.stopPropagation();
+    kelurahan_list.style.display = kelurahan_list.style.display === 'block' ? 'none' : 'block';
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function () {
+    kecamatan_list.style.display = 'none';
+    kelurahan_list.style.display = 'none';
+});
+
+// Event listener untuk memilih kecamatan
+kecamatan_list.querySelectorAll('div').forEach(item => {
+    item.addEventListener('click', function() {
+        const selectedKecamatan = this.textContent;
+        kecamatan_span.textContent = selectedKecamatan;
+        kecamatan_list.style.display = 'none';
+        
+        // Update kelurahan dropdown berdasarkan kecamatan yang dipilih
+        updateKelurahanDropdown(selectedKecamatan);
+    });
+});
+
+// Event listener untuk memilih kelurahan
+kelurahan_list.querySelectorAll('div').forEach(item => {
+    item.addEventListener('click', function() {
+        kelurahan_span.textContent = this.textContent;
+        kelurahan_list.style.display = 'none';
+    });
+});
+
+// Fungsi untuk mengupdate dropdown kelurahan berdasarkan kecamatan yang dipilih
+function updateKelurahanDropdown(kecamatan) {
+    // Kosongkan dropdown kelurahan
+    kelurahan_list.innerHTML = '';
+    kelurahan_span.textContent = 'Kelurahan';
+    
+    // Jika kecamatan ada di mapping, tambahkan kelurahannya
+    if (kecamatanKelurahanMap[kecamatan]) {
+        kecamatanKelurahanMap[kecamatan].forEach(kelurahan => {
+            const div = document.createElement('div');
+            div.textContent = kelurahan;
+            kelurahan_list.appendChild(div);
+            
+            // Tambahkan event listener untuk item kelurahan yang baru dibuat
+            div.addEventListener('click', function() {
+                kelurahan_span.textContent = kelurahan;
+                kelurahan_list.style.display = 'none';
+            });
+        });
+    } else {
+        // Jika kecamatan tidak ada di mapping, tampilkan pesan
+        const div = document.createElement('div');
+        div.textContent = 'Tidak ada kelurahan';
+        kelurahan_list.appendChild(div);
+    }
+}
             // Script untuk zoom in/out
             const zoomIn = document.querySelector('.btn-light .fa-plus').closest('button');
             const zoomOut = document.querySelector('.btn-light .fa-minus').closest('button');
@@ -1520,39 +1623,45 @@
                 console.log('Zoom Out');
                 // Implement zoom out functionality here
             });
-        });
+
+            // Tambahkan di fungsi updateKelurahanDropdown
+if (kecamatanKelurahanMap[kecamatan]) {
+    kelurahan_dropdown.classList.remove('disabled');
+} else {
+    kelurahan_dropdown.classList.add('disabled');
+}
+
     </script>
 
-    <!-- Modal untuk Popup Table -->
-    <div class="modal fade" id="sectorModal" tabindex="-1" aria-labelledby="sectorModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="sectorModalLabel">Detail Sektor</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Usaha</th>
-                                <th>Lokasi</th>
-                                <th>Koordinat</th>
-                                <th>Detail</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sectorTableBody">
-                            <!-- Data akan diisi oleh JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
+<div class="modal fade" id="sectorModal" tabindex="-1" aria-labelledby="sectorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sectorModalLabel">Detail Sektor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Sektor</th>
+                            <th>Lokasi</th>
+                            <th>Koordinat</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectorTableBody">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
+</div>
 </body>
 
 </html>
